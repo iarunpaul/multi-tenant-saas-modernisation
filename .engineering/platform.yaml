@@ -1,0 +1,27 @@
+platform:
+  name: agentic-engineering-platform
+  repository: iarunpaul/agentic-engineering-platform
+  version: v0.1.1
+
+assets:
+  skills:
+    - grill
+    - architecture-review
+    - implement
+    - test
+    - security-review
+    - production-readiness
+
+  standards:
+    - architecture
+    - engineering
+    - testing
+    - security
+    - api
+    - observability
+    - ai
+
+  policies:
+    - human-approval
+    - quality-gates
+    - secrets

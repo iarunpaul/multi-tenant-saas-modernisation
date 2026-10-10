@@ -1,0 +1,14 @@
+{
+  "managedBy": "agentic-engineering-platform",
+  "platform": "agentic-engineering-platform",
+  "repository": "iarunpaul/agentic-engineering-platform",
+  "skills": [
+    "grill",
+    "architecture-review",
+    "implement",
+    "test",
+    "security-review",
+    "production-readiness"
+  ],
+  "version": "v0.1.1"
+}
