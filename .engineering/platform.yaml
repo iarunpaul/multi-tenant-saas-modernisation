@@ -1,7 +1,7 @@
 platform:
   name: agentic-engineering-platform
   repository: iarunpaul/agentic-engineering-platform
-  version: v0.1.1
+  version: v0.1.2
 
 assets:
   skills:
@@ -25,3 +25,6 @@ assets:
     - human-approval
     - quality-gates
     - secrets
+
+  templates:
+    - reviews/grill-review-template.md

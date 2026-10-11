@@ -65,6 +65,7 @@ class PlatformConfig:
     skills: tuple[str, ...]
     standards: tuple[str, ...]
     policies: tuple[str, ...]
+    templates: tuple[str, ...]
 
 
 def fail(
@@ -241,6 +242,55 @@ def read_string_list(
 
     return tuple(result)
 
+def read_relative_path_list(
+    value: Any,
+    field_name: str,
+) -> tuple[str, ...]:
+    if value is None:
+        return tuple()
+
+    if not isinstance(value, list):
+        fail(
+            f"Manifest field '{field_name}' "
+            "must be a list."
+        )
+
+    result: list[str] = []
+
+    for index, item in enumerate(value):
+        if (
+            not isinstance(item, str)
+            or not item.strip()
+        ):
+            fail(
+                f"Manifest field "
+                f"'{field_name}[{index}]' "
+                "must be a non-empty string."
+            )
+
+        normalised = item.strip().replace("\\", "/")
+        path = PurePosixPath(normalised)
+
+        if (
+            path.is_absolute()
+            or ".." in path.parts
+            or "." in path.parts
+        ):
+            fail(
+                f"Manifest field "
+                f"'{field_name}[{index}]' "
+                "must be a safe relative path."
+            )
+
+        result.append(normalised)
+
+    if len(result) != len(set(result)):
+        fail(
+            f"Manifest field '{field_name}' "
+            "contains duplicates."
+        )
+
+    return tuple(result)
 
 def load_config(
     manifest: Path,
@@ -300,6 +350,10 @@ def load_config(
         policies=read_string_list(
             assets.get("policies"),
             "assets.policies",
+        ),
+        templates=read_relative_path_list(
+            assets.get("templates"),
+            "assets.templates",
         ),
     )
 
@@ -659,6 +713,12 @@ def populate_snapshot(
             / f"{policy}.md",
             staging_root,
         )
+    for template in config.templates:
+        copy_file(
+            release_root,
+            Path("templates") / Path(template),
+            staging_root,
+        )
 
 
 def calculate_tree_hashes(
@@ -745,6 +805,9 @@ def write_snapshot_metadata(
             ),
             "policies": list(
                 config.policies
+            ),
+             "templates": list(
+                config.templates
             ),
         },
         "files": file_hashes,
@@ -1077,6 +1140,9 @@ def check_snapshot(
             ),
             "policies": list(
                 config.policies
+            ),
+             "templates": list(
+                config.templates
             ),
         },
     }

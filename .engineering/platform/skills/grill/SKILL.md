@@ -840,6 +840,146 @@ It challenges whether the proposed work satisfies them.
 
 ---
 
+# Review Persistence
+
+A completed Grill should produce a durable review artifact when operating in a writable repository.
+
+Interactive discovery responses are temporary conversation state.
+
+The final completed Grill assessment is an engineering record.
+
+## Default Review Location
+
+Store completed Grill reviews under a folder that reflects the engineering concern being reviewed.
+
+Use the mapping:
+
+```text
+requirement
+    → docs/reviews/requirements/
+
+architecture
+    → docs/reviews/architecture/
+
+implementation-plan
+    → docs/reviews/implementation/
+
+production-change
+    → docs/reviews/production-change/
+```
+
+Use the naming convention:
+
+```text
+NNNN-short-descriptive-name.md
+```
+
+Examples:
+
+```text
+docs/reviews/requirements/0001-multi-tenant-modernisation.md
+
+docs/reviews/architecture/0001-multi-tenant-data-topology.md
+
+docs/reviews/implementation/0001-tenant-migration-plan.md
+
+docs/reviews/production-change/0001-regional-database-cutover.md
+```
+
+Sequence numbers should be monotonically increasing within each review category.
+
+The review folder represents the engineering concern being challenged, not the skill used to perform the review.
+
+## Review Template
+
+Where available, use:
+
+```text
+templates/reviews/grill-review-template.md
+```
+
+or the installed platform equivalent:
+
+```text
+.engineering/platform/templates/reviews/grill-review-template.md
+```
+
+The template defines the durable structure of the Grill review.
+
+Do not copy the complete chat transcript into the review.
+
+Capture only information that has engineering value:
+
+- reviewed artifact
+- Grill mode
+- confirmed facts
+- accepted assumptions
+- material unknowns
+- critical challenges
+- failure scenarios
+- required decisions
+- recommendation
+- conditions
+- decisions resolved during Grill
+- remaining follow-up
+- next engineering activity
+
+## Persistence Behaviour
+
+After the Final Assessment Gate has been satisfied:
+
+1. produce the final Grill assessment
+2. determine the next review sequence number
+3. generate the review document from the Grill review template
+4. save the document under `docs/reviews/grill/`
+5. report the created file path to the user
+
+If the agent cannot write repository files:
+
+1. generate the complete review document
+2. state the intended path
+3. provide the document ready for the user to save
+
+Do not claim that a review was saved when no repository write occurred.
+
+## User Control
+
+If the user explicitly asks:
+
+```text
+do not save
+```
+
+or equivalent, do not create the artifact.
+
+If the user specifies a different review location or format, follow that instruction unless it conflicts with repository policy.
+
+## Incomplete Grill Sessions
+
+Do not persist a completed Grill review while the Interactive Discovery Gate remains open.
+
+A discovery session may optionally be saved as a draft only when explicitly requested.
+
+Draft reviews must be clearly marked:
+
+```text
+status: draft
+```
+
+and must not be treated as ARC-001 completion evidence.
+
+## Evidence Semantics
+
+Only a completed Grill review may be used as evidence for:
+
+```text
+ARC-001 — Grill Review
+```
+
+The existence of a review document does not imply that all findings have been resolved.
+
+Recommendation and unresolved conditions must remain visible in the artifact.
+
 # Completion Criteria
 
 A Grill review is complete when:
