@@ -194,6 +194,133 @@ APPROVE WITH CONDITIONS
 REWORK REQUIRED
 INSUFFICIENT INFORMATION
 ```
+## Review Persistence
+
+A completed architecture review should produce a durable review artifact when operating in a writable repository.
+
+The chat response is temporary interaction state.
+
+The completed architecture review is an engineering record.
+
+### Default Review Location
+
+Store completed architecture reviews under:
+
+```text
+docs/reviews/architecture/
+```
+
+Use the naming convention:
+
+```text
+NNNN-short-descriptive-name.md
+```
+
+Examples:
+
+```text
+docs/reviews/architecture/0001-multi-tenant-data-topology.md
+docs/reviews/architecture/0002-tenant-directory-control-plane.md
+docs/reviews/architecture/0003-tenant-recovery-architecture.md
+```
+
+Sequence numbers should be monotonically increasing within the architecture review category.
+
+### Review Template
+
+Where available, use:
+
+```text
+templates/reviews/architecture-review-template.md
+```
+
+or the installed platform equivalent:
+
+```text
+.engineering/platform/templates/reviews/architecture-review-template.md
+```
+
+The template defines the durable structure of the architecture review.
+
+Do not persist the complete chat transcript.
+
+Capture only engineering-relevant information including:
+
+- reviewed artifact
+- architectural drivers
+- architecture summary
+- strengths
+- material findings
+- standards compliance
+- alternatives
+- required decisions
+- conditions
+- recommendation
+- remaining risks
+- next engineering activity
+- suggested skill handoff
+
+### Persistence Behaviour
+
+After the architecture review has reached a final recommendation:
+
+1. determine the next architecture review sequence number
+2. generate the review document using the architecture-review template
+3. save it under:
+
+```text
+docs/reviews/architecture/
+```
+
+4. report the created file path to the user
+
+If the runtime cannot write repository files:
+
+1. generate the complete review document
+2. state the intended file path
+3. provide the document ready for the user to save
+
+Do not claim that the review was saved when no repository write occurred.
+
+### User Control
+
+If the user explicitly requests:
+
+```text
+do not save
+```
+
+or equivalent, do not create the artifact.
+
+If the user requests a different output location or format, follow that instruction unless it conflicts with repository policy.
+
+### Incomplete Reviews
+
+Do not persist a completed architecture review while material findings are still being discovered and no final recommendation has been reached.
+
+A partial review may be saved as a draft only when explicitly requested.
+
+Draft reviews must use:
+
+```text
+status: draft
+```
+
+and must not be treated as completed architecture-review evidence.
+
+### Evidence Semantics
+
+The existence of an architecture review artifact does not mean all findings are resolved.
+
+The artifact must preserve:
+
+- blockers
+- significant findings
+- conditions
+- unresolved decisions
+- recommendation
+
+An `APPROVE WITH CONDITIONS` review remains conditional until those conditions are resolved or explicitly accepted by the appropriate decision authority.
 
 ## Behaviour Rules
 
