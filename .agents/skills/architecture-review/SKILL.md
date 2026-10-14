@@ -35,6 +35,143 @@ Review available:
 - policies
 - operational constraints
 
+## Review Execution Protocol
+
+Architecture Review follows:
+
+```text
+standards/ai/review-execution.md
+```
+
+or the installed platform equivalent:
+
+```text
+.engineering/platform/standards/ai/review-execution.md
+```
+
+The review must have:
+
+- an explicit review target
+- material upstream context
+- deterministic review preparation
+- durable review evidence
+
+### Review Tool Resolution
+
+Resolve review automation in this order:
+
+```text
+scripts/review_execution.py
+.engineering/platform/scripts/review_execution.py
+```
+
+If either exists, use it before substantive review.
+
+Use the tool result as authoritative for:
+
+- protocol version
+- execution mode
+- normalized fingerprint
+- equivalent-review detection
+- next sequence
+- rerun lineage
+- supersession lineage
+- legacy predecessor lineage
+
+Do not manually replace these values when canonical tooling succeeds.
+
+### Target Resolution
+
+If the user provides an explicit target, use it.
+
+If no target is supplied:
+
+- if exactly one credible active architecture artifact exists, state that target before proceeding
+- if multiple credible targets exist, ask the user which artifact to review
+- do not silently perform a repository-wide review
+
+Repository-wide review must be explicitly requested.
+
+### Context Resolution
+
+Relevant material context normally includes:
+
+```text
+requirements
+requirements Grill/review
+parent ADRs
+reviews of parent ADRs
+current review target
+applicable standards/policies
+```
+
+Do not mechanically include every ADR or review.
+
+Previous reviews of the same target are lineage and finding-history sources.
+
+Do not include them as fingerprint context merely because they exist.
+
+### Prior Finding Resolution
+
+Where previous or upstream reviews contain findings relevant to the current architecture, classify them as:
+
+```text
+RESOLVES
+PARTIALLY RESOLVES
+DOES NOT RESOLVE
+NOT APPLICABLE
+```
+
+Do not silently discard inherited findings.
+
+### Idempotency
+
+If repository tooling reports:
+
+```text
+shouldExecute: false
+```
+
+do not perform another substantive review and do not create another completed artifact.
+
+Report the equivalent completed review.
+
+If:
+
+```text
+shouldExecute: true
+```
+
+perform the review and persist it using the sequence and lineage information returned by the tool.
+
+### Lineage
+
+Use lineage exactly as returned by canonical tooling:
+
+```text
+rerunOf
+    → same fingerprint + explicit rerun
+
+supersedes
+    → changed canonical inputs
+
+legacyPredecessor
+    → previous same-target review cannot be canonically compared
+```
+
+Do not use `rerun-of` merely because an older review exists.
+
+### Fallback
+
+If neither canonical tool path exists, or canonical preparation fails:
+
+- state that deterministic review automation is unavailable
+- do not claim canonical idempotency
+- do not invent a canonical fingerprint
+- mark any persisted review as fallback execution
+
+A fallback review must not be presented as equivalent to a canonical protocol review.
+
 ## Workflow
 
 ### 1. Identify Architectural Drivers
@@ -141,6 +278,38 @@ Record only significant and durable decisions.
 
 ## Output
 
+### Review Context
+
+Record the decision chain used for the review.
+
+Example:
+
+```text
+Requirements:
+docs/architecture/requirements.md
+
+Requirements Review:
+docs/reviews/requirements/0001-multi-tenant-modernisation.md
+
+Parent Decision:
+docs/architecture/ADRs/0001-multi-tenant-data-topology.md
+
+Parent Architecture Review:
+docs/reviews/architecture/0001-multi-tenant-data-topology.md
+
+Review Target:
+docs/architecture/ADRs/0002-tenant-directory-and-placement-control-plane.md
+```
+
+### Prior Finding Resolution
+
+For relevant findings inherited from earlier reviews:
+
+| Prior Finding | Source | Resolution |
+|---|---|---|
+| Tenant directory availability undefined | REVIEW-ARC-0001 | RESOLVES / PARTIALLY RESOLVES / DOES NOT RESOLVE |
+| Stale routing behaviour undefined | REVIEW-ARC-0001 | ... |
+
 ### Architecture Summary
 
 Briefly describe the proposed architecture.
@@ -201,6 +370,52 @@ A completed architecture review should produce a durable review artifact when op
 The chat response is temporary interaction state.
 
 The completed architecture review is an engineering record.
+
+### Execution Manifest Persistence
+
+When canonical review tooling succeeds, persist the exact normalized manifest returned by `review_execution.py`.
+
+Use the `renderedManifest` value returned by:
+
+```text
+review_execution.py prepare
+```
+
+to populate:
+
+```text
+{{execution_manifest}}
+```
+
+in the architecture-review template.
+
+Do not reconstruct, shorten, reinterpret, or translate the canonical manifest.
+
+The Review Context section remains the human-readable explanation of relevant engineering context.
+
+After persisting the completed review artifact, run:
+
+```text
+review_execution.py check
+```
+
+with exactly the same target, context, skill, review type, and platform version used during preparation.
+
+The review is canonical completed evidence only when verification succeeds.
+
+Verification must cover:
+
+```text
+input fingerprint
+target SHA-256
+execution manifest
+```
+
+If verification fails:
+
+- do not claim canonical verification passed
+- do not treat the review as completed canonical evidence
+- report the verification failure
 
 ### Default Review Location
 

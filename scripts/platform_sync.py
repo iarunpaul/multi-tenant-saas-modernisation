@@ -66,6 +66,7 @@ class PlatformConfig:
     standards: tuple[str, ...]
     policies: tuple[str, ...]
     templates: tuple[str, ...]
+    scripts: tuple[str, ...]
 
 
 def fail(
@@ -354,6 +355,10 @@ def load_config(
         templates=read_relative_path_list(
             assets.get("templates"),
             "assets.templates",
+        ),
+        scripts=read_relative_path_list(
+            assets.get("scripts"),
+            "assets.scripts",
         ),
     )
 
@@ -719,6 +724,14 @@ def populate_snapshot(
             Path("templates") / Path(template),
             staging_root,
         )
+    for script in config.scripts:
+        copy_file(
+            release_root,
+            Path("scripts").joinpath(
+                *PurePosixPath(script).parts
+            ),
+            staging_root,
+        )
 
 
 def calculate_tree_hashes(
@@ -808,6 +821,9 @@ def write_snapshot_metadata(
             ),
              "templates": list(
                 config.templates
+            ),
+            "scripts": list(
+                config.scripts
             ),
         },
         "files": file_hashes,
@@ -1144,6 +1160,9 @@ def check_snapshot(
              "templates": list(
                 config.templates
             ),
+            "scripts": list(
+                config.scripts
+            )
         },
     }
 

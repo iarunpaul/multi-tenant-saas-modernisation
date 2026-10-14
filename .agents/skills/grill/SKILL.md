@@ -135,6 +135,93 @@ Do not reject a design merely because another design is possible.
 
 ---
 
+# Review Execution Protocol
+
+Grill follows:
+
+```text
+standards/ai/review-execution.md
+```
+
+or the installed platform equivalent:
+
+```text
+.engineering/platform/standards/ai/review-execution.md
+```
+
+The Interactive Discovery Gate governs how material unknowns are resolved.
+
+The Review Execution Protocol governs:
+
+- target identity
+- material review context
+- input fingerprinting
+- protocol compatibility
+- idempotency
+- review lineage
+- sequence allocation
+- persistence evidence
+
+## Review Tool Resolution
+
+Resolve deterministic review automation in this order:
+
+```text
+scripts/review_execution.py
+.engineering/platform/scripts/review_execution.py
+```
+
+If either exists, use it.
+
+The tool result is authoritative for:
+
+- protocol version
+- execution mode
+- input fingerprint
+- equivalent-review detection
+- next sequence
+- rerun lineage
+- supersession lineage
+- legacy predecessor lineage
+
+Do not manually recreate deterministic review bookkeeping when canonical tooling succeeds.
+
+## Same-Target Review History
+
+Previous reviews of the same target may be inspected for:
+
+- prior findings
+- unresolved conditions
+- outcome comparison
+- lineage
+
+but they must not be added to fingerprint context merely because they exist.
+
+## Idempotency
+
+If canonical tooling reports an equivalent completed Grill review:
+
+```text
+shouldExecute: false
+```
+
+do not repeat the completed Grill assessment.
+
+Report the existing review.
+
+Interactive discovery should not be restarted merely to reproduce an already equivalent completed review.
+
+## Fallback
+
+If deterministic review tooling is unavailable:
+
+- state that canonical review execution is unavailable
+- do not claim canonical idempotency
+- do not invent a canonical protocol fingerprint
+- mark any persisted review as fallback execution
+
+---
+
 # Interactive Discovery Gate
 
 Grill is interactive by default.
@@ -848,6 +935,59 @@ Interactive discovery responses are temporary conversation state.
 
 The final completed Grill assessment is an engineering record.
 
+### Execution Manifest Persistence
+
+When canonical review tooling succeeds, persist the exact normalized manifest returned by `review_execution.py`.
+
+Use the `renderedManifest` value returned by:
+
+```text
+review_execution.py prepare
+```
+
+to populate:
+
+```text
+{{execution_manifest}}
+```
+
+in the Grill review template.
+
+Do not:
+
+- reconstruct the manifest from Review Context
+- manually rewrite the manifest
+- remove context entries
+- add context entries after preparation
+- translate the manifest into another structure
+
+The persisted manifest is machine-verifiable execution evidence.
+
+The Review Context section is human-readable engineering context and may be shorter than the canonical execution manifest.
+
+After the completed review artifact is persisted, run:
+
+```text
+review_execution.py check
+```
+
+using the same target, context, skill, review type, and platform version used during preparation.
+
+A canonical review is not complete evidence unless this check succeeds.
+
+The check must validate both:
+
+```text
+input fingerprint
+execution manifest
+```
+
+If verification fails:
+
+- do not report canonical verification as passed
+- do not treat the artifact as completed canonical evidence
+- report the verification failure
+
 ## Default Review Location
 
 Store completed Grill reviews under a folder that reflects the engineering concern being reviewed.
@@ -931,7 +1071,21 @@ After the Final Assessment Gate has been satisfied:
 1. produce the final Grill assessment
 2. determine the next review sequence number
 3. generate the review document from the Grill review template
-4. save the document under `docs/reviews/grill/`
+4. save the document under the review category selected by the Grill mode:
+
+```text
+requirement
+    → docs/reviews/requirements/
+
+architecture
+    → docs/reviews/architecture/
+
+implementation-plan
+    → docs/reviews/implementation/
+
+production-change
+    → docs/reviews/production-change/
+```
 5. report the created file path to the user
 
 If the agent cannot write repository files:

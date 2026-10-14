@@ -121,6 +121,38 @@ Before completion:
 - verify error handling
 - ensure tests cover material behaviour
 
+## Review Execution Protocol
+
+Grill follows:
+
+```text
+standards/ai/review-execution.md
+```
+
+The Interactive Discovery Gate governs how missing information is resolved.
+
+The Review Execution Protocol governs:
+
+- target identity
+- review context
+- input fingerprinting
+- idempotency
+- reruns
+- sequence allocation
+- durable persistence
+
+When repository automation is available, use:
+
+```text
+scripts/review_execution.py
+```
+
+for deterministic review bookkeeping.
+
+Do not create a duplicate completed Grill review when the same target, relevant context and platform version already have an equivalent completed review.
+
+A deliberate rerun must be explicitly requested.
+
 ## Output
 
 Report:

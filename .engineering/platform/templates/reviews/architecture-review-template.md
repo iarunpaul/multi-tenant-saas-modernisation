@@ -10,7 +10,53 @@ status: completed
 date: {{date}}
 reviewed-artifact: {{reviewed_artifact}}
 platform-version: {{platform_version}}
+protocol-version: {{protocol_version}}
+execution-mode: {{execution_mode}}
+target-sha256: {{target_sha256}}
+input-fingerprint: {{input_fingerprint}}
+{{lineage_metadata}}
 ```
+## Execution Manifest
+
+```yaml
+protocol-version: {{protocol_version}}
+platform-version: {{platform_version}}
+target:
+  path: {{reviewed_artifact}}
+  sha256: {{target_sha256}}
+context:
+{{execution_context}}
+```
+
+## Review Context
+
+### Requirements
+
+{{requirements}}
+
+### Requirements Review
+
+{{requirements_review}}
+
+### Parent Decisions
+
+{{parent_decisions}}
+
+### Previous Architecture Reviews
+
+{{previous_architecture_reviews}}
+
+### Review Target
+
+{{reviewed_artifact}}
+
+### Applicable Standards and Policies
+
+{{standards_and_policies}}
+
+## Prior Finding Resolution
+
+{{prior_finding_resolution}}
 
 ## Purpose
 
@@ -108,6 +154,8 @@ INSUFFICIENT INFORMATION
 ## Evidence
 
 This document records the completed architecture review and may be referenced as evidence for architecture-governance controls.
+
+Execution semantics are defined by the recorded Review Execution Protocol version and execution mode.
 
 This review does not replace an ADR.
 

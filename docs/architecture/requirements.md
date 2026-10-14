@@ -2,7 +2,12 @@
 
 ## Purpose
 
-Define the architectural requirements, constraints, assumptions and unresolved questions for modernising a large-scale database-per-tenant SaaS platform into a more scalable multi-tenant architecture.
+The requirements defined here are maintained as the problem and outcome baseline for architecture work.
+
+They have been challenged through the platform `grill` workflow.
+
+Architecture decisions may refine or resolve requirements and assumptions, but this document must remain explicit about which requirements are confirmed, which remain assumptions, and which require later validation.
+
 
 This document is intentionally focused on the problem and required outcomes.
 
@@ -269,7 +274,11 @@ Potential requirements may include:
 - tenant-specific contractual constraints
 - region specific customer data laws and regulations
 
-Exact requirements remain to be confirmed.
+For the current architecture prototype, EU/EEA residency is the planning baseline for tenant data, replicas, backups and recovery copies.
+
+Customer-specific legal, regulatory and contractual obligations remain to be validated before onboarding an affected tenant or region.
+
+The architecture must retain the ability to apply stricter placement or isolation where those obligations require it.
 
 ---
 
@@ -277,14 +286,26 @@ Exact requirements remain to be confirmed.
 
 The target architecture must provide a clear recovery model.
 
-The architecture must determine whether recovery is required at:
+Independent tenant restore is required.
+
+The recovery model must support recovery without compromising:
+
+- tenant isolation
+- deletion obligations
+- data residency
+- neighbouring tenants
+- data integrity
+
+The architecture must determine the appropriate recovery mechanisms at:
 
 - platform level
 - database or shard level
 - tenant level
-- individual dataset level
+- individual dataset level where justified
 
-Per-tenant restore requirements are currently unresolved.
+The exact production recovery objectives, including RPO, RTO, retention, validation evidence and service-tier commitments, remain subject to validation and accountable-owner approval.
+
+Recovery design must also address legacy backup compatibility during migration.
 
 ---
 
@@ -512,7 +533,7 @@ The Grill and architecture review must address at least the following questions:
 3. What tenant isolation guarantees are required?
 4. Can tenant data share physical storage?
 5. Are there regulated or high-value tenants requiring dedicated infrastructure?
-6. Is per-tenant backup and restore required?
+6. How must independent tenant restore be implemented and evidenced across shared, sharded and dedicated tenancy models?
 7. What migration downtime is acceptable?
 8. What rollback guarantees are required?
 9. What consistency guarantees are required during migration?
@@ -522,7 +543,7 @@ The Grill and architecture review must address at least the following questions:
 13. How should cache keys prevent cross-tenant collision?
 14. How should tenant-specific throttling work?
 15. How should noisy neighbours be controlled?
-16. What data residency requirements exist?
+16. How must the EU/EEA prototype residency baseline be enforced, and how will stricter customer-specific residency or contractual requirements be applied?
 17. How should hot tenants be moved between infrastructure partitions?
 18. How should cross-tenant analytics operate?
 19. What failure blast radius is acceptable?
@@ -581,8 +602,20 @@ The architecture discovery phase is successful when:
 ## Current Status
 
 ```text
-Phase: Architecture Discovery
-Next Activity: Grill — Requirements
-Architecture Decision: Not yet made
-Implementation Status: Not started
+Phase: Detailed Architecture Design
+
+Requirements Review: Completed — PROCEED WITH CONDITIONS
+
+Architecture Direction:
+ADR-0001 proposes a hybrid tenancy model with shared/sharded placement as the default and dedicated placement for justified exceptions.
+
+Architecture Decision Status:
+Proposed — not yet treated as an authorised production decision.
+
+Next Activity:
+Continue detailed architecture decisions and validation, beginning with tenant directory and placement control-plane design.
+
+Implementation Status:
+Not started
 ```
+

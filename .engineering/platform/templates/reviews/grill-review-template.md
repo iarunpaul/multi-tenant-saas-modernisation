@@ -10,7 +10,27 @@ status: completed
 date: {{date}}
 reviewed-artifact: {{reviewed_artifact}}
 platform-version: {{platform_version}}
+protocol-version: {{protocol_version}}
+execution-mode: {{execution_mode}}
+target-sha256: {{target_sha256}}
+input-fingerprint: {{input_fingerprint}}
+{{lineage_metadata}}
 ```
+## Execution Manifest
+
+```json
+{{execution_manifest}}
+```
+
+## Review Context
+
+### Review Target
+
+{{reviewed_artifact}}
+
+### Material Context
+
+{{review_context}}
 
 ## Purpose
 
